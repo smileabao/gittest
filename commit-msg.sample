@@ -1,0 +1,38 @@
+#!/bin/sh
+#
+# An example hook script to check the commit log message.
+# Called by "git commit" with one argument, the name of the file
+# that has the commit message.  The hook should exit with non-zero
+# status after issuing an appropriate message if it wants to stop the
+# commit.  The hook is allowed to edit the commit message file.
+#
+# To enable this hook, rename this file to "commit-msg".
+
+# Uncomment the below to add a Signed-off-by line to the message.
+# Doing this in a hook is a bad idea in general, but the prepare-commit-msg
+# hook is more suited to it.
+#
+# SOB=$(git var GIT_AUTHOR_IDENT | sed -n 's/^\(.*>\).*$/Signed-off-by: \1/p')
+# grep -qs "^$SOB" "$1" || echo "$SOB" >> "$1"
+
+# This example catches duplicate Signed-off-by lines.
+
+
+## check 2021-09-0009 找到這種格式的時候，要加上需求單網址
+
+COMMIT_MSG_FILE=$1
+COMMIT_SOURCE=$2
+SHA1=$3
+
+FILE_CONTENT="$(cat $COMMIT_MSG_FILE)"
+
+ if [[ $FILE_CONTENT =~ ^.*(([0-9]{4})-([0-9]{2})-([0-9]{4})).* ]]
+ then
+   ticket="${BASH_REMATCH[1]}"
+   echo "http://innoflow/transferPage/;\"$ticket\";"
+   echo "" >> "$COMMIT_MSG_FILE"
+   echo "----------auto commit message------" >> "$COMMIT_MSG_FILE"
+   echo "subject:url$ticket;" >> "$COMMIT_MSG_FILE"
+ fi
+
+exit 0
